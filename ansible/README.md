@@ -66,8 +66,8 @@ ssh-add path/to/private/key
 | backend_report_directory | директория, в которую бэкенд будет записывать отчёты  | /var/sausage-store/reports | 
 | backend_log_directory | директория, в которую бэкенд будет записывать свои логи | /var/sausage-store/log | 
 | backend_lib_directory | директория, к которой будет запущен backend | /opt/sausage-store/bin | 
-| nexus_repo_backend_url | URL-адрес nexus репозитория | https://nexus.praktikum-services.tech/repository/ | 
-| backend_version | версия maven актефакта | 1.0.1781068 | 
+| nexus_repo_backend_url | URL-адрес nexus репозитория | <url_nexus_storage> | 
+| backend_version | версия maven актефакта | <num_ver> | 
 | nexus_repo_user | имя пользователя от репозитория | можно зашифровать с помощью ansible-vault | 
 | nexus_repo_pass | пароль пользователя от репозитория | можно зашифровать с помощью ansible-vault | 
 
@@ -78,8 +78,8 @@ ssh-add path/to/private/key
 | frontend_service_user | сервисный пользователь | www-data | 
 | frontend_service_user_group | группа сервисного пользователя | www-data | 
 | frontend_working_directory | директория, из которой веб-сервер будет читать файлы статики | /var/www-data/dist/frontend | 
-| nexus_repo_frontend_url | URL-адрес nexus репозитория | https://nexus.praktikum-services.tech/repository/ | 
-| version_frontend | версия актефакта | 1.0.1781069 | 
+| nexus_repo_frontend_url | URL-адрес nexus репозитория | <url_nexus_storage> | 
+| version_frontend | версия актефакта | <num_ver> | 
 | nexus_repo_user | имя пользователя от репозитория | можно зашифровать с помощью ansible-vault | 
 | nexus_repo_pass | пароль пользователя от репозитория | можно зашифровать с помощью ansible-vault | 
  
