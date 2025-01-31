@@ -1,3 +1,17 @@
+# Исключить файлы VScode
+.idea/
+.vscode/
+.vs/
+
+# Исключить временные файлы vim
+*~
+*.swp
+*.swo
+
+# Ansible #
+# исключить файлы с паролями от vault
+.vault
+
 # Local .terraform directories
 **/.terraform/*
 
@@ -15,6 +29,7 @@ crash.*.log
 # to change depending on the environment.
 *.tfvars
 *.tfvars.json
+key.json
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in
@@ -35,3 +50,4 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+.terraform.d/
