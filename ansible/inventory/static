@@ -1,0 +1,9 @@
+[all:children]
+backend
+frontend
+
+[backend]
+<host ip>
+
+[frontend]
+<host ip>

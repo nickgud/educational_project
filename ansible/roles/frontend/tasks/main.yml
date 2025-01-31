@@ -1,0 +1,77 @@
+---
+# tasks file for frontend
+- name: 'Waiting connect to host'
+  ansible.builtin.wait_for_connection:
+
+- name: 'Enable ansible facts'
+  ansible.builtin.setup:
+    filter:
+      - 'ansible_distribution'
+      - 'os_family'
+      - 'ansible_machine_id'
+      - 'ansible_*_mb'
+
+- name: 'Install apps'
+  become: true
+  ansible.builtin.package:
+    name: 
+      - nodejs
+      - npm
+      - nginx
+    state: present
+
+- name: 'Add service user'
+  become: true
+  ansible.builtin.user:
+    name: "{{ frontend_service_user }}"
+    shell: "/sbin/nologin"
+    create_home: false
+    state: present
+
+- name: 'Create folders'
+  become: true
+  ansible.builtin.file:
+    path: "{{ frontend_working_directory }}"
+    state: directory
+        #    recurse: true
+    owner: "{{ frontend_service_user }}"
+    group: "{{ frontend_service_user_group }}"
+    mode: '755'
+
+- name: 'Copy frontend from Nexus'
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ nexus_repo_frontend_url }}/{{ version_frontend }}/sausage-store-{{ version_frontend }}.tar.gz"
+    dest: "/var/www-data/sausage-store-{{ version_frontend }}.tar.gz"
+    username: "{{ nexus_repo_user }}"
+    password: "{{ nexus_repo_pass }}"  
+  
+- name: 'Extract archive'
+  become: true
+  ansible.builtin.unarchive:
+    src: "/var/www-data/sausage-store-{{ version_frontend }}.tar.gz"
+    dest: "/var/www-data/dist"
+    remote_src: true
+    owner: "{{ frontend_service_user }}"
+    group: "{{ frontend_service_user_group }}"
+        #mode: '755'
+  
+- name: 'Template a file to /etc/nginx/sites-enabled/'
+  become: true
+  ansible.builtin.template:
+    src: sausage-store.j2
+    dest: /etc/nginx/sites-enabled/sausage-store.conf
+
+- name: 'Remove default file in /etc/nginx/sites-enabled'
+  become: true
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: 'Reload systemd and service'
+  become: true
+  ansible.builtin.systemd_service:
+    state: restarted
+    daemon_reload: true
+    name: nginx
+    enabled: true

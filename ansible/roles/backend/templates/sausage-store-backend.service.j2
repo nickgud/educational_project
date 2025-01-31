@@ -1,0 +1,18 @@
+[Unit]
+Description=sausage-store
+After=network.target
+
+[Service]
+User={{ backend_service_user }}
+Group={{ backend_service_user_group }}
+
+Restart=on-failure
+
+Environment=REPORT_PATH={{ backend_report_directory }}
+Environment=LOG_PATH={{ backend_log_directory }}
+WorkingDirectory=/var/sausage-store
+
+ExecStart=/bin/bash -c '/usr/bin/java -Xrs -jar {{ backend_lib_directory }}/sausage-store-{{ backend_version }}.jar'
+
+[Install]
+WantedBy=multi-user.target

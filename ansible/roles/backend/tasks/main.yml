@@ -1,0 +1,80 @@
+---
+# tasks file for backend
+- name: 'Waiting connect to host'
+  ansible.builtin.wait_for_connection:
+
+- name: 'Enable ansible facts'
+  ansible.builtin.setup:
+    filter:
+      - 'ansible_distribution'
+      - 'os_family'
+      - 'ansible_machine_id'
+      - 'ansible_*_mb'
+
+- name: 'Update cache and install java'
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name: 
+      - openjdk-17-jdk-headless
+      - python3-lxml
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: 'Update cache and install java'
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name: 
+      - java-17-openjdk-headless
+      - python3-lxml
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: 'Add service user'
+  become: true
+  ansible.builtin.user:
+    name: "{{ backend_service_user }}"
+    shell: "/sbin/nologin"
+    create_home: false
+    home: "/var/sausage-store" 
+
+- name: 'Create folders'
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ backend_service_user }}"
+    group: "{{ backend_service_user_group }}"
+    mode: '755'
+  with_items:
+    - "{{ backend_report_directory }}"
+    - "{{ backend_log_directory }}"
+    - "{{ backend_lib_directory }}"  
+
+- name: 'Download maven_artifact from Nexus'
+  become: true
+  maven_artifact:
+    dest: "{{ backend_lib_directory }}/sausage-store-{{ backend_version }}.jar"
+    repository_url: "{{ nexus_repo_backend_url }}"  
+    group_id: "com.yandex.practicum.devops"
+    artifact_id: "sausage-store"
+    version: "{{ backend_version }}"
+    username: "{{ nexus_repo_user }}"
+    password: "{{ nexus_repo_pass }}"
+    owner: "{{ backend_service_user }}"
+    group: "{{ backend_service_user_group }}"
+    mode: '644'
+  
+- name: 'Template a file to /etc/systemd/system/'
+  become: true
+  template:
+    src: sausage-store-backend.service.j2
+    dest: /etc/systemd/system/sausage-store-backend.service
+
+- name: 'Reload systemd and service'
+  become: true
+  ansible.builtin.systemd_service:
+    state: restarted
+    daemon_reload: true
+    name: sausage-store-backend
+    enabled: true

@@ -1,0 +1,14 @@
+---
+- name: 'play backend service sausage-store'
+  # Шаблон целевых хостов это группа хостов с именем backend
+  hosts: backend
+  # Список ansible-ролей для backend-серверов
+  roles:
+    - backend
+
+- name: 'play  frontend service sausage-store'
+  # Шаблон целевых хостов это группа хостов с именем frontend
+  hosts: frontend
+  # Список ansible-ролей для frontend-серверов
+  roles:
+    - frontend          
