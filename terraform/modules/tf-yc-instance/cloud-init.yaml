@@ -1,0 +1,21 @@
+#cloud-config
+ssh_pwauth: no
+users:
+- default
+- name: ansible
+  gecos: ansible
+  primary_group: ansible
+  shell: /bin/bash
+  sudo: ['ALL=(ALL) NOPASSWD:ALL']
+  groups: sudo
+  ssh_authorized_keys:
+  - .............
+- name: ubuntu
+  gecos: ubuntu
+  primary_group: ubuntu
+  shell: /bin/bash
+  sudo: ['ALL=(ALL) NOPASSWD:ALL']
+  groups: sudo
+  ssh_authorized_keys:
+  - ...............
+runcmd: []
